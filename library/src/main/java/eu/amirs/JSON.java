@@ -4,17 +4,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.*;
-
-/**
- * Created by amirkhorsandi on 3/3/17.
- */
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class JSON {
 
     private JSONObject jsObj;
-    private JSONArray jsArr;
-    private Object value;
+    private JSONArray  jsArr;
+    private Object     value;
 
 
     public JSON(Object jsonString) {
@@ -96,7 +97,7 @@ public class JSON {
     }
 
 
-    public String  stringValue() {
+    public String stringValue() {
 
         if (this.value() == null)
             return "";
@@ -282,14 +283,13 @@ public class JSON {
             } else {
                 if (index == -1)
                     jsonArr.put(inputObject);
-                else if(index > -1)
+                else if (index > -1)
                     jsonArr.put(index, inputObject);
             }
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
 
 
         this.jsArr = jsonArr;
@@ -340,14 +340,11 @@ public class JSON {
             return;
 
         JSONArray newJsonArr = new JSONArray();
-
         for (int i = 0; i < jsonArr.length(); i++) {
-
-
             try {
                 if (JSONObject.class.isInstance(inputObject) && JSONObject.class.isInstance(jsonArr.get(i))) {
 
-                    if (!jsonObjectComparesEqual((JSONObject)jsonArr.get(i), (JSONObject)inputObject, null, null) ) {
+                    if (!jsonObjectComparesEqual((JSONObject) jsonArr.get(i), (JSONObject) inputObject, null, null)) {
                         newJsonArr.put(jsonArr.get(i));
                     }
 
@@ -393,7 +390,7 @@ public class JSON {
                         valueObject = ((JSON) valueObject).getJsonObject();
                 }
 
-                mainDic.put((String) values[i], valueObject == null ? JSONObject.NULL:valueObject);
+                mainDic.put((String) values[i], valueObject == null ? JSONObject.NULL : valueObject);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -409,8 +406,6 @@ public class JSON {
             mainList.put(obj);
         return mainList;
     }
-
-
 
 
     public static boolean jsonObjectComparesEqual(JSONObject x, JSONObject y, Collection<String> only, Collection<String> except) {
@@ -444,6 +439,7 @@ public class JSON {
         }
         return true;
     }
+
     private static Set<String> keySet(JSONObject j) {
         Set<String> res = new TreeSet<String>();
         for (String s : new AsIterable<String>(j.keys())) {
@@ -454,12 +450,36 @@ public class JSON {
 
     private static class AsIterable<T> implements Iterable<T> {
         private Iterator<T> iterator;
+
         public AsIterable(Iterator<T> iterator) {
             this.iterator = iterator;
         }
+
         public Iterator<T> iterator() {
             return iterator;
         }
+    }
+
+    /**
+     * Iterate over all keys of the JSON
+     *
+     * @param jsonObject
+     *     the json object
+     * @return the hash map
+     */
+    public static HashMap<String, String> iterateOverJSON(JSONObject jsonObject) {
+        Iterator<String> iter = jsonObject.keys();
+        HashMap<String, String> keyValueMap = new HashMap<>();
+        while (iter.hasNext()) {
+            String key = iter.next();
+            try {
+                String value = jsonObject.getString(key);
+                keyValueMap.put(key, value);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return keyValueMap;
     }
 
 }
